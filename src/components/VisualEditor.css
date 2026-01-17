@@ -1,0 +1,91 @@
+.visual-editor-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.visual-editor-flow {
+  background-color: var(--color-bg, #1a1a1a);
+}
+
+/* コントロールパネル */
+.visual-editor-controls {
+  background: var(--color-surface, #2d2d2d);
+  border: 1px solid var(--color-border, #404040);
+  border-radius: var(--radius-md, 8px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.visual-editor-controls button {
+  background: var(--color-surface, #2d2d2d);
+  border: none;
+  border-bottom: 1px solid var(--color-border, #404040);
+  color: var(--color-text-secondary, #a0a0a0);
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.visual-editor-controls button:last-child {
+  border-bottom: none;
+}
+
+.visual-editor-controls button:hover {
+  background: var(--color-surface-hover, #363636);
+  color: var(--color-text-primary, #ffffff);
+}
+
+.visual-editor-controls button svg {
+  fill: currentColor;
+}
+
+/* ミニマップ */
+.visual-editor-minimap {
+  background: var(--color-surface, #2d2d2d);
+  border: 1px solid var(--color-border, #404040);
+  border-radius: var(--radius-md, 8px);
+  overflow: hidden;
+}
+
+.visual-editor-minimap svg {
+  background: var(--color-bg, #1a1a1a);
+}
+
+/* React Flow グローバルスタイル上書き */
+.react-flow__edge-path {
+  stroke: var(--color-text-muted, #6b6b6b);
+  stroke-width: 2;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: var(--color-accent, #d4ff00);
+}
+
+.react-flow__connection-line {
+  stroke: var(--color-accent, #d4ff00);
+  stroke-width: 2;
+}
+
+.react-flow__attribution {
+  display: none;
+}
+
+/* 選択ボックス */
+.react-flow__selection {
+  background: rgba(212, 255, 0, 0.1);
+  border: 1px dashed var(--color-accent, #d4ff00);
+}
+
+/* ノード選択状態 */
+.react-flow__node.selected {
+  box-shadow: none;
+}
+
+/* パネル */
+.react-flow__panel {
+  margin: 12px;
+}

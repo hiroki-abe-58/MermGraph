@@ -1,0 +1,45 @@
+.mermaid-edge {
+  transition: stroke 0.15s ease;
+}
+
+.mermaid-edge.selected {
+  filter: drop-shadow(0 0 4px rgba(212, 255, 0, 0.5));
+}
+
+.mermaid-edge.animated {
+  stroke-dasharray: 5;
+  animation: mermaid-edge-flow 0.5s linear infinite;
+}
+
+@keyframes mermaid-edge-flow {
+  from {
+    stroke-dashoffset: 10;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* エッジラベル */
+.mermaid-edge-label {
+  position: absolute;
+  background: var(--color-surface, #2d2d2d);
+  color: var(--color-text-primary, #ffffff);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  pointer-events: all;
+  cursor: pointer;
+  border: 1px solid var(--color-border, #404040);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.mermaid-edge-label:hover {
+  background: var(--color-surface-hover, #363636);
+}
+
+.mermaid-edge-label.selected {
+  border-color: var(--color-accent, #d4ff00);
+  box-shadow: 0 0 8px rgba(212, 255, 0, 0.3);
+}

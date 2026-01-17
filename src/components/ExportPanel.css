@@ -1,0 +1,162 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 20, 20, 0.45);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+}
+
+.modal {
+  width: min(520px, 90vw);
+  max-height: 80vh;
+  background: var(--color-surface, #2d2d2d);
+  border: 1px solid var(--color-border, #404040);
+  border-radius: var(--radius-lg, 12px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transition: opacity 200ms ease, transform 200ms ease;
+}
+
+.modal.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background: var(--color-bg-secondary, #141414);
+  border-bottom: 1px solid var(--color-border, #404040);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.modal-header-slot {
+  width: 36px;
+  height: 36px;
+}
+
+.modal-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm, 4px);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-text-secondary, #a0a0a0);
+  cursor: pointer;
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.modal-icon-button:hover {
+  background: var(--color-surface, #2d2d2d);
+  color: var(--color-text-primary, #ffffff);
+  border-color: var(--color-border, #404040);
+}
+
+.modal-title {
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border-bottom: 1px solid var(--color-border, #404040);
+  background: var(--color-bg-secondary, #141414);
+  position: sticky;
+  top: 52px;
+  z-index: 1;
+}
+
+.modal-body {
+  padding: var(--spacing-md, 16px);
+  overflow-y: auto;
+  flex: 1;
+}
+
+.modal-footer {
+  padding: var(--spacing-md, 16px) var(--spacing-lg, 24px);
+  border-top: 1px solid var(--color-border, #404040);
+  background: var(--color-bg-secondary, #141414);
+  position: sticky;
+  bottom: 0;
+}
+
+.btn-block {
+  width: 100%;
+  padding: 12px 16px;
+}
+
+.export-options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+.export-option {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background: var(--color-bg, #1a1a1a);
+  border: 1px solid var(--color-border, #404040);
+  border-radius: var(--radius-md, 8px);
+  color: var(--color-text-primary, #ffffff);
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--transition-fast, 150ms ease);
+}
+
+.export-option:hover {
+  border-color: var(--color-border-light, #525252);
+  background: var(--color-surface-hover, #363636);
+}
+
+.export-option.selected {
+  border-color: var(--color-accent, #d4ff00);
+  box-shadow: 0 0 0 1px var(--color-accent, #d4ff00);
+}
+
+.export-option .material-icons {
+  color: var(--color-text-secondary, #a0a0a0);
+}
+
+.export-option.selected .material-icons {
+  color: var(--color-accent, #d4ff00);
+}
+
+.export-option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.export-option-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.export-option-description {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary, #a0a0a0);
+}
+
+.export-option-check {
+  font-size: 20px;
+}

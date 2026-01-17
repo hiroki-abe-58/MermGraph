@@ -65,7 +65,7 @@ function escapeHtml(text: string): string {
 
 interface ExportRequest {
   code: string;
-  format: 'png' | 'svg';
+  format: 'png' | 'svg' | 'pdf';
 }
 
 exportRoutes.post('/export', async (c) => {
@@ -79,8 +79,8 @@ exportRoutes.post('/export', async (c) => {
       return c.json({ error: 'No code provided' }, 400);
     }
 
-    if (format !== 'png' && format !== 'svg') {
-      return c.json({ error: 'Invalid format. Use "png" or "svg"' }, 400);
+    if (format !== 'png' && format !== 'svg' && format !== 'pdf') {
+      return c.json({ error: 'Invalid format. Use "png", "svg", or "pdf"' }, 400);
     }
 
     // Launch puppeteer
@@ -132,6 +132,37 @@ exportRoutes.post('/export', async (c) => {
         headers: {
           'Content-Type': 'image/svg+xml',
           'Content-Disposition': 'attachment; filename="diagram.svg"',
+        },
+      });
+    } else if (format === 'pdf') {
+      const boundingBox = await svgElement.boundingBox();
+
+      if (!boundingBox) {
+        throw new Error('Could not get diagram dimensions');
+      }
+
+      const padding = 20;
+      const width = Math.ceil(boundingBox.width + padding * 2);
+      const height = Math.ceil(boundingBox.height + padding * 2);
+
+      await page.setViewport({
+        width,
+        height,
+        deviceScaleFactor: 2,
+      });
+
+      const pdfBuffer = await page.pdf({
+        width: `${width}px`,
+        height: `${height}px`,
+        printBackground: true,
+        margin: { top: '0px', right: '0px', bottom: '0px', left: '0px' },
+        pageRanges: '1',
+      });
+
+      return new Response(pdfBuffer, {
+        headers: {
+          'Content-Type': 'application/pdf',
+          'Content-Disposition': 'attachment; filename="diagram.pdf"',
         },
       });
     } else {
