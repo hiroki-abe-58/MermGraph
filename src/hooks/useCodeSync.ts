@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useGraphStore } from '../store/graphStore';
 import { parseMermaidCode } from '../utils/mermaidParser';
+import { detectDiagramType, isFlowDiagramType } from '../utils/diagramTypes';
 import { serializeMermaidCode } from '../utils/mermaidSerializer';
 import type { GraphData } from '../types/graph';
 
@@ -30,6 +31,11 @@ export function useCodeSync({ code, onCodeChange, debounceMs = 300 }: UseCodeSyn
   
   // コードからビジュアルへの同期
   const syncCodeToVisual = useCallback((mermaidCode: string) => {
+    const diagramType = detectDiagramType(mermaidCode);
+    if (!isFlowDiagramType(diagramType)) {
+      return;
+    }
+
     const result = parseMermaidCode(mermaidCode);
     
     if (result.success && result.data) {
@@ -48,6 +54,10 @@ export function useCodeSync({ code, onCodeChange, debounceMs = 300 }: UseCodeSyn
     }
   }, [setSyncingFromCode, updateFromParsedData]);
   
+  const normalizeNodesForCode = useCallback((items: typeof nodes) => {
+    return items.map(({ position, ...rest }) => rest);
+  }, []);
+
   // ビジュアルからコードへの同期
   const syncVisualToCode = useCallback(() => {
     const graphData: GraphData = {
@@ -84,7 +94,9 @@ export function useCodeSync({ code, onCodeChange, debounceMs = 300 }: UseCodeSyn
     }
     
     // 変更があるかチェック
-    const hasNodeChanges = JSON.stringify(nodes) !== JSON.stringify(prevNodesRef.current);
+    const hasNodeChanges =
+      JSON.stringify(normalizeNodesForCode(nodes)) !==
+      JSON.stringify(normalizeNodesForCode(prevNodesRef.current));
     const hasEdgeChanges = JSON.stringify(edges) !== JSON.stringify(prevEdgesRef.current);
     const hasDirectionChanges = direction !== prevDirectionRef.current;
     
@@ -96,6 +108,15 @@ export function useCodeSync({ code, onCodeChange, debounceMs = 300 }: UseCodeSyn
     prevEdgesRef.current = edges;
     prevDirectionRef.current = direction;
     
+    // 方向変更は即時反映
+    if (hasDirectionChanges && !hasNodeChanges && !hasEdgeChanges) {
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current);
+      }
+      syncVisualToCode();
+      return;
+    }
+
     // 既存のタイマーをクリア
     if (syncTimeoutRef.current) {
       clearTimeout(syncTimeoutRef.current);
@@ -111,7 +132,7 @@ export function useCodeSync({ code, onCodeChange, debounceMs = 300 }: UseCodeSyn
         clearTimeout(syncTimeoutRef.current);
       }
     };
-  }, [nodes, edges, direction, isSyncingFromCode, syncVisualToCode, debounceMs]);
+  }, [nodes, edges, direction, isSyncingFromCode, syncVisualToCode, debounceMs, normalizeNodesForCode]);
   
   // 初期同期
   useEffect(() => {

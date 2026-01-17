@@ -21,6 +21,7 @@ import type {
   MermaidEdgeData,
 } from '../types/graph';
 import { DEFAULT_NODE_STYLE, DEFAULT_EDGE_STYLE } from '../types/graph';
+import { layoutFlowNodes } from '../utils/flowLayout';
 
 interface GraphState {
   // グラフデータ
@@ -93,7 +94,15 @@ export const useGraphStore = create<GraphState>((set, get) => ({
   // 基本セッター
   setNodes: (nodes) => set({ nodes }),
   setEdges: (edges) => set({ edges }),
-  setDirection: (direction) => set({ direction }),
+  setDirection: (direction) => {
+    const { nodes, edges } = get();
+    const nextNodes = nodes.map((node) => ({
+      ...node,
+      position: { ...node.position },
+    }));
+    layoutFlowNodes(nextNodes, edges, direction);
+    set({ direction, nodes: nextNodes });
+  },
   setDiagramType: (type) => set({ diagramType: type }),
   
   // React Flowハンドラー

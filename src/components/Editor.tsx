@@ -1,6 +1,7 @@
 import MonacoEditor from '@monaco-editor/react';
 import type { OnMount } from '@monaco-editor/react';
 import { useCallback } from 'react';
+import { MERMAID_DIAGRAM_TYPES } from '../utils/diagramTypes';
 
 interface EditorProps {
   value: string;
@@ -15,8 +16,7 @@ function Editor({ value, onChange }: EditorProps) {
     // Define Mermaid syntax highlighting
     monaco.languages.setMonarchTokensProvider('mermaid', {
       keywords: [
-        'graph', 'flowchart', 'sequenceDiagram', 'classDiagram', 'stateDiagram',
-        'erDiagram', 'gantt', 'pie', 'gitGraph', 'mindmap', 'timeline',
+        ...MERMAID_DIAGRAM_TYPES,
         'subgraph', 'end', 'participant', 'actor', 'note', 'loop', 'alt',
         'else', 'opt', 'par', 'and', 'critical', 'break', 'rect', 'class',
         'state', 'title', 'section', 'dateFormat', 'axisFormat', 'excludes',
@@ -27,7 +27,7 @@ function Editor({ value, onChange }: EditorProps) {
       tokenizer: {
         root: [
           [/%%.*$/, 'comment'],
-          [/[a-zA-Z_]\w*/, {
+          [/[a-zA-Z_][\w-]*/, {
             cases: {
               '@keywords': 'keyword',
               '@default': 'identifier'

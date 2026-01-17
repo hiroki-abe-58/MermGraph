@@ -2,10 +2,12 @@ import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import Editor from './components/Editor';
 import VisualEditor from './components/VisualEditor';
+import Preview from './components/Preview';
 import StylePanel from './components/StylePanel';
 import Toolbar from './components/Toolbar';
 import ExportPanel from './components/ExportPanel';
 import { useCodeSync } from './hooks/useCodeSync';
+import { detectDiagramType, isFlowDiagramType } from './utils/diagramTypes';
 
 const DEFAULT_MERMAID = `flowchart TD
     A[Start] --> B{Decision}
@@ -45,7 +47,10 @@ function AppContent() {
   const [stylePanelWidth, setStylePanelWidth] = useState(280);
   const [activeDrag, setActiveDrag] = useState<'code-visual' | 'visual-style' | null>(null);
   const dragStart = useRef({ startX: 0, codeWidth: 0, styleWidth: 0 });
-  const showStylePanel = activeView === 'visual' || activeView === 'split';
+  const diagramType = useMemo(() => detectDiagramType(code), [code]);
+  const isEmptyCode = code.trim().length === 0;
+  const isFlowDiagram = isFlowDiagramType(diagramType) || isEmptyCode;
+  const showStylePanel = activeView === 'visual' && isFlowDiagram;
   const showSplitPanels = activeView === 'split';
 
   const handleCodeChange = useCallback((value: string | undefined) => {
@@ -115,6 +120,12 @@ function AppContent() {
     };
   }, [activeDrag, showStylePanel, showSplitPanels, stylePanelWidth]);
 
+  useEffect(() => {
+    if (!isFlowDiagram && activeView === 'visual') {
+      setActiveView('split');
+    }
+  }, [activeView, isFlowDiagram]);
+
   const resizerSpace = useMemo(() => {
     const count = (showSplitPanels ? 1 : 0) + (showStylePanel ? 1 : 0);
     return RESIZER_SIZE * count;
@@ -180,7 +191,8 @@ function AppContent() {
           <button
             className={`view-toggle-btn ${activeView === 'visual' ? 'active' : ''}`}
             onClick={() => setActiveView('visual')}
-            title="ビジュアルエディタのみ"
+            title={isFlowDiagram ? 'ビジュアルエディタのみ' : 'フローチャートのみ対応'}
+            disabled={!isFlowDiagram}
           >
             <span className="material-icons">account_tree</span>
           </button>
@@ -189,7 +201,7 @@ function AppContent() {
       </header>
       
       {/* ツールバー（ビジュアルモード時のみ表示） */}
-      {(activeView === 'visual' || activeView === 'split') && (
+      {activeView === 'visual' && isFlowDiagram && (
         <Toolbar />
       )}
       
@@ -222,14 +234,28 @@ function AppContent() {
         {/* ビジュアルエディタパネル */}
         {(activeView === 'visual' || activeView === 'split') && (
           <div
-            className={`panel visual-panel ${activeView === 'split' ? 'split' : 'full'}`}
+            className={`panel ${activeView === 'split' ? 'preview-panel split' : 'visual-panel full'}`}
             style={activeView === 'split' ? { flex: '1 1 auto', minWidth: 0 } : undefined}
           >
             <div className="panel-header">
-              <span className="panel-title">Visual Editor</span>
+              <span className="panel-title">
+                {activeView === 'split' ? 'Preview' : 'Visual Editor'}
+              </span>
             </div>
             <div className="panel-content">
-              <VisualEditor />
+              {activeView === 'split' ? (
+                <>
+                  {!isFlowDiagram && !isEmptyCode && (
+                    <div className="diagram-notice">
+                      <span className="material-icons">info</span>
+                      フローチャート以外はプレビューのみ対応です
+                    </div>
+                  )}
+                  <Preview code={code} />
+                </>
+              ) : (
+                <VisualEditor />
+              )}
             </div>
           </div>
         )}

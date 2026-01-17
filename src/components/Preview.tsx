@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import mermaid from 'mermaid';
+import { detectDiagramType } from '../utils/diagramTypes';
 
 interface PreviewProps {
   code: string;
@@ -58,6 +59,13 @@ function Preview({ code }: PreviewProps) {
       }
 
       try {
+        const diagramType = detectDiagramType(code);
+        if (!diagramType) {
+          setError('未対応の図種です');
+          setSvgContent('');
+          return;
+        }
+
         // Validate the diagram first
         const isValid = await mermaid.parse(code);
         if (!isValid) {
@@ -80,7 +88,7 @@ function Preview({ code }: PreviewProps) {
     };
 
     // Debounce rendering to avoid too many updates
-    const timeoutId = setTimeout(renderDiagram, 300);
+    const timeoutId = setTimeout(renderDiagram, 150);
     return () => clearTimeout(timeoutId);
   }, [code]);
 
