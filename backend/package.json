@@ -1,0 +1,18 @@
+{
+  "name": "mermgraph-backend",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npx tsx --watch src/index.ts",
+    "start": "npx tsx src/index.ts"
+  },
+  "dependencies": {
+    "hono": "^4.6.0",
+    "@hono/node-server": "^1.13.0",
+    "puppeteer": "^23.6.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.0",
+    "@types/node": "^22.0.0"
+  }
+}
